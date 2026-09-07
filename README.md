@@ -248,6 +248,7 @@ csbindgen::Builder::default()
         _ => x,
     })
     .always_included_types(["ZL_StandardGraphID", "ZL_StandardNodeID"])` // optional, default: []
+    .csharp_suppress_gc_transition(["LZ4_versionNumber"])           // optional, default: []
     .generate_csharp_file("../dotnet-sandbox/NativeMethods.cs")     // required
     .unwrap();
 ```
@@ -295,6 +296,8 @@ csbindgen::Builder::default()
 also `csharp_imported_namespaces` can call multiple times.
 
 `always_included_types` is optional. Types and enums that exist in the input file are all trimmed and not generated if they are not used in method definitions. If set name, do not trim and generate type to C#.
+
+`csharp_suppress_gc_transition` is optional. Rust (extern) method names listed here will have [`[SuppressGCTransition]`](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.suppressgctransitionattribute) emitted on their generated `[DllImport]` declaration. This avoids the cost of the GC transition for very short-running native calls, but must only be used on methods that execute quickly and never call back into managed code.
 
 ### Unity Callback
 
@@ -355,6 +358,7 @@ csbindgen::Builder::default()
         _ => x,
     })
     .always_included_types(["ZL_StandardGraphID", "ZL_StandardNodeID"])` // optional, default: []
+    .csharp_suppress_gc_transition(["LZ4_versionNumber"])           // optional, default: []
     .csharp_file_header("#if !UNITY_WEBGL")       // optional, default: ""
     .csharp_file_footer("#endif")                 // optional, default: ""
     .generate_to_file("src/lz4_ffi.rs", "../dotnet-sandbox/lz4_bindgen.cs") // for C to Rust to C#, if C to C#, use generate_csharp_file instead.

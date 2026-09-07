@@ -36,6 +36,7 @@ pub struct BindgenOptions {
     pub csharp_file_header: String,
     pub csharp_file_footer: String,
     pub always_included_types: Vec<String>,
+    pub csharp_suppress_gc_transition: Vec<String>,
 }
 
 impl Default for Builder {
@@ -64,6 +65,7 @@ impl Default for Builder {
                 csharp_file_header: "".to_string(),
                 csharp_file_footer: "".to_string(),
                 always_included_types: vec![],
+                csharp_suppress_gc_transition: vec![],
             },
         }
     }
@@ -235,6 +237,15 @@ impl Builder {
     /// configure the additional footer for the generated C# code.
     pub fn csharp_file_footer<T: Into<String>>(mut self, csharp_file_footer: T) -> Builder {
         self.options.csharp_file_footer = csharp_file_footer.into();
+        self
+    }
+
+    /// Adds a list of (Rust) method names that will have `[SuppressGCTransition]` emitted
+    /// on their generated `[DllImport]` declaration, default is `[]`
+    pub fn csharp_suppress_gc_transition<I, S>(mut self, csharp_suppress_gc_transition: I) -> Builder
+        where I: IntoIterator<Item = S>, S: ToString
+    {
+        self.options.csharp_suppress_gc_transition.extend(csharp_suppress_gc_transition.into_iter().map(|v| v.to_string()));
         self
     }
 

@@ -62,6 +62,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         //.csharp_c_ulong_convert("uint")
         // .csharp_use_function_pointer(true)
         .csharp_generate_const_filter(|_| true)
+        .csharp_suppress_gc_transition(["LZ4_versionNumber"])
         .generate_to_file("src/lz4_ffi.rs", "../dotnet-sandbox/lz4_bindgen.cs")
         .unwrap();
 

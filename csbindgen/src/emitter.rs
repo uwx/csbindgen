@@ -187,6 +187,9 @@ pub fn emit_csharp(
         method_list_string.push_str_ln(
             format!("        [DllImport(__DllName, EntryPoint = \"{entry_point}\", CallingConvention = CallingConvention.{call_conv}, ExactSpelling = true)]").as_str(),
         );
+        if options.csharp_suppress_gc_transition.iter().any(|x| x == &item.method_name) {
+            method_list_string.push_str_ln("        [SuppressGCTransition]");
+        }
         if return_type == "bool" {
             method_list_string.push_str_ln("        [return: MarshalAs(UnmanagedType.U1)]");
         }
