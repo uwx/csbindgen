@@ -37,6 +37,7 @@ pub struct BindgenOptions {
     pub csharp_file_footer: String,
     pub always_included_types: Vec<String>,
     pub csharp_suppress_gc_transition: Vec<String>,
+    pub csharp_unmanaged_callers_only: Vec<String>,
 }
 
 impl Default for Builder {
@@ -66,6 +67,7 @@ impl Default for Builder {
                 csharp_file_footer: "".to_string(),
                 always_included_types: vec![],
                 csharp_suppress_gc_transition: vec![],
+                csharp_unmanaged_callers_only: vec![],
             },
         }
     }
@@ -246,6 +248,18 @@ impl Builder {
         where I: IntoIterator<Item = S>, S: ToString
     {
         self.options.csharp_suppress_gc_transition.extend(csharp_suppress_gc_transition.into_iter().map(|v| v.to_string()));
+        self
+    }
+
+    /// Adds a list of (Rust) method names that will have `[UnmanagedCallersOnly(CallConvs = ...)]`
+    /// emitted on their generated `[DllImport]` declaration (in addition to `[DllImport]` itself),
+    /// so that the method can also be invoked via a function pointer (`&Method`) from C#.
+    /// Requires .NET 10 or later, which allows `UnmanagedCallersOnly` on P/Invoke declarations.
+    /// default is `[]`
+    pub fn csharp_unmanaged_callers_only<I, S>(mut self, csharp_unmanaged_callers_only: I) -> Builder
+        where I: IntoIterator<Item = S>, S: ToString
+    {
+        self.options.csharp_unmanaged_callers_only.extend(csharp_unmanaged_callers_only.into_iter().map(|v| v.to_string()));
         self
     }
 
