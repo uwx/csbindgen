@@ -6,7 +6,6 @@
 #pragma warning disable CS8981
 using System;
 using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
 
 
 namespace CsBindgen
@@ -114,8 +113,6 @@ namespace CsBindgen
 
 
         [DllImport(__DllName, EntryPoint = "csbindgen_LZ4_versionNumber", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        [SuppressGCTransition]
-        [UnmanagedCallersOnly(CallConvs = new[] { typeof(CallConvCdecl) })]
         public static extern int LZ4_versionNumber();
 
         [DllImport(__DllName, EntryPoint = "csbindgen_LZ4_versionString", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]

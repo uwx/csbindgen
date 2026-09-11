@@ -190,12 +190,6 @@ pub fn emit_csharp(
         if options.csharp_suppress_gc_transition.iter().any(|x| x == &item.method_name) {
             method_list_string.push_str_ln("        [SuppressGCTransition]");
         }
-        if options.csharp_unmanaged_callers_only.iter().any(|x| x == &item.method_name) {
-            let call_conv_type = to_call_conv_type(call_conv);
-            method_list_string.push_str_ln(
-                format!("        [UnmanagedCallersOnly(CallConvs = new[] {{ typeof({call_conv_type}) }})]").as_str(),
-            );
-        }
         if return_type == "bool" {
             method_list_string.push_str_ln("        [return: MarshalAs(UnmanagedType.U1)]");
         }
@@ -412,17 +406,11 @@ pub fn emit_csharp(
         imported_namespaces.push_str_ln(format!("using {name};").as_str());
     }
 
-    let call_conv_using = if options.csharp_unmanaged_callers_only.is_empty() {
-        ""
-    } else {
-        "using System.Runtime.CompilerServices;\n"
-    };
-
     let result = format!(
         "{file_header}
 using System;
 using System.Runtime.InteropServices;
-{call_conv_using}{imported_namespaces}
+{imported_namespaces}
 
 namespace {namespace}
 {{
@@ -435,18 +423,6 @@ namespace {namespace}
     );
 
     result
-}
-
-fn to_call_conv_type(call_conv: &str) -> &str {
-    match call_conv {
-        "Cdecl" => "CallConvCdecl",
-        "StdCall" => "CallConvStdcall",
-        "ThisCall" => "CallConvThiscall",
-        "FastCall" => "CallConvFastcall",
-        // `CallingConvention.Winapi` resolves per-platform at runtime, which `CallConvs` can't express;
-        // fall back to the common case (Cdecl on non-Windows x86, stdcall-equivalent on Windows x86).
-        _ => "CallConvCdecl",
-    }
 }
 
 fn convert_token_enum_repr(repr: &str) -> &str {
